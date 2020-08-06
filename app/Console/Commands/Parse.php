@@ -13,9 +13,15 @@ class Parse extends BaseCommand
 
     public function handle()
     {
+        $insertedCount = 0;
+
         $parser = new RbcParser;
 
+        $this->log('Parsing index page...');
+
         $items = $parser->parseIndexPage();
+
+        $this->log(count($items) . ' items fetched');
 
         $sourceIds = array_map(function ($item) {
             return $item['source_id'];
@@ -28,6 +34,8 @@ class Parse extends BaseCommand
                 continue;
             }
 
+            $this->log('Parsing ' . $item['url']);
+
             $res = $parser->parseFullPage($item['url']);
 
             $article = new Article();
@@ -39,7 +47,9 @@ class Parse extends BaseCommand
                 'datetime' => $res['datetime'],
                 'has_image' => !!$res['imageUrl'],
             ]);
-            $article->save();
+            if ($article->save()) {
+                $insertedCount++;
+            }
 
             if ($res['imageUrl']) {
                 $imageContents = file_get_contents($res['imageUrl']);
@@ -47,6 +57,6 @@ class Parse extends BaseCommand
             }
         }
 
-        $this->log('Finished');
+        $this->log('Finished, ' . $insertedCount . ' items inserted');
     }
 }
