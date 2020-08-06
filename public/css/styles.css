@@ -1,0 +1,27 @@
+.page-index h2 {
+    margin-bottom: 0;
+}
+
+.page-index .date {
+    color: #888;
+    font-size: 0.8rem;
+    margin-bottom: 0.5em;
+}
+
+.page-article .date {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.page-article .source span {
+    color: #666;
+}
+
+.page-article .announce {
+    font-weight: bold;
+}
+
+.page-article img {
+    margin-bottom: 1em;
+    max-height: 400px;
+}
