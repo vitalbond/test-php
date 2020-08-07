@@ -36,24 +36,28 @@ class Parse extends BaseCommand
 
             $this->log('Parsing ' . $item['url']);
 
-            $res = $parser->parseFullPage($item['url']);
+            try {
+                $res = $parser->parseFullPage($item['url']);
 
-            $article = new Article();
-            $article->fill([
-                'title' => $res['title'],
-                'text' => $res['text'],
-                'source_id' => $item['source_id'],
-                'source_url' => $item['url'],
-                'datetime' => $res['datetime'],
-                'has_image' => !!$res['imageUrl'],
-            ]);
-            if ($article->save()) {
-                $insertedCount++;
-            }
+                $article = new Article();
+                $article->fill([
+                    'title' => $res['title'],
+                    'text' => $res['text'],
+                    'source_id' => $item['source_id'],
+                    'source_url' => $item['url'],
+                    'datetime' => $res['datetime'],
+                    'has_image' => !!$res['imageUrl'],
+                ]);
+                if ($article->save()) {
+                    $insertedCount++;
+                }
 
-            if ($res['imageUrl']) {
-                $imageContents = file_get_contents($res['imageUrl']);
-                Storage::put($article->getImagePath(), $imageContents);
+                if ($res['imageUrl']) {
+                    $imageContents = file_get_contents($res['imageUrl']);
+                    Storage::put($article->getImagePath(), $imageContents);
+                }
+            } catch (\Exception $e) {
+                $this->log('Error parsing ' . $item['url']);
             }
         }
 
